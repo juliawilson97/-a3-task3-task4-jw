@@ -1,0 +1,74 @@
+---
+title: "a3_task3_julia_wilson.RMD"
+author: "Julia Wilson"
+date: "10/23/2021"
+output: html_document
+---
+
+### Set Up
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(here)
+library(tidyverse)
+library(janitor)
+library(lubridate)
+```
+
+## Section 1
+### Read in the Data
+```{r}
+# Read in urchins.csv data and name "urchins_data"
+urchins_data <- read_csv(here("data", "urchins.csv"))
+```
+
+### Wrangle Data
+```{r}
+urchins_clean <- urchins_data %>% 
+  clean_names()
+```
+
+
+### Visualize Data
+```{r}
+ggplot(data = urchins_clean, aes(x = size)) +
+  geom_histogram(aes(color = common_name), bins = 10) +
+  labs(x = "Urchin Diameter (cm)", 
+       y = "Y AXIS HELP",
+       title = "Purple and Red Urchin Sizes",
+       color = "Urchin Type")
+```
+
+
+```{r}
+
+```
+
+
+Figure 1: 
+
+## Section 2
+```{r}
+purple_urchins <- urchins_clean %>% 
+  filter(common_name == "Purple Urchin") %>% 
+  mutate(date_new = mdy(date)) %>% 
+  mutate(year_new = year(date_new)) %>%
+  mutate(site_full)
+```
+
+```{r}
+purple_urchin_summary <- purple_urchins %>% 
+  group_by(site, year_new) %>% 
+  summarize(number_purple_urchins = n())
+```
+
+```{r}
+ggplot(data = purple_urchin_summary, 
+       aes(x = year_new, y = number_purple_urchins, color = site)) +
+  geom_line() +
+  labs(x = "Count of Purple Urchins",
+       y = "Year",
+       title = "Recorded Number of Purple Urchins",
+       color = "Site")
+```
+Figure Caption: 
