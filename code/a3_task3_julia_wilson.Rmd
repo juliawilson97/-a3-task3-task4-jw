@@ -4,11 +4,9 @@ author: "Julia Wilson"
 date: "10/23/2021"
 output: html_document
 ---
-
-### Set Up
-
-```{r message = FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+### Set Up 
+```{r setup, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(here)
 library(tidyverse)
 library(janitor)
@@ -18,7 +16,7 @@ library(kableExtra)
 
 ## Section 1
 ### Read in the Data
-```{r}
+```{r, message = FALSE}
 # Read in urchins.csv data and name "urchins_data"
 urchins_data <- read_csv(here("data", "urchins.csv"))
 ```
@@ -39,9 +37,7 @@ ggplot(data = urchins_clean, aes(x = size)) +
   labs(x = "Urchin Diameter (cm)", 
        y = "Count",
        title = "Purple and Red Urchin Sizes",
-       caption = "Figure 1: Purple and Red Urchin Sizes Compares the distribution of sizes between purple and red urchins.") + 
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+       caption = "Figure 1: ") 
 ```
 
 
@@ -58,15 +54,13 @@ urchins_summary <- urchins_clean %>%
         col.names = c("Urchin Name",
                       "Mean (cm)",
                       "Median(cm)",
-                      "Standard Deviation",
+                      "Standarad Deviation",
                       "Sample Size"),
         digits = 1) %>% 
   kable_minimal()
 
 urchins_summary
 ```
-
-The purple urchins have a smaller mean (4.5cm), median (4.5cm), and standard deviation (1.2) than the red urchins. As a result, the purple urchins' central tendency and spread are also smaller than the red urchins. The red urchins’ larger central tendency and spread are a result of the following values: mean (6.8cm), median (7.0cm), and standard deviation (1.9). 
 
 
 
@@ -95,17 +89,12 @@ purple_urchin_summary
 
 ```{r}
 ggplot(data = purple_urchin_summary, 
-       aes(x = year_new, y = sample_size, fill = site_full)) +
-  geom_bar(stat = "identity", width = 0.5) +
-  facet_wrap(~site_full) + 
+       aes(x = year_new, y = sample_size, color = site_full)) +
+  geom_bar(stat = "identity") +
+  aes(fill = site_full) +
   labs(x = "Year",
        y = "Count of Purple Urchins",
-       title = "Total Purple Urchin Count by Site (2008 -2020)",
-       fill = "Site",
-       caption = "Figure 1: Total Purple Urchin Count by Site
-       Compares number of purple urchins in varying sites between 2008 - 2010.") +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
-        plot.caption = element_text(hjust = 0))
+       title = "Total Purple Urchin Count per Site (2008 -2020)")
 ```
-
+Figure Caption: 
 Text:

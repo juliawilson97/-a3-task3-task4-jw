@@ -1,0 +1,67 @@
+---
+title: "a3_task4_julia_wilson.Rmd"
+author: "Julia Wilson"
+date: "10/23/2021"
+output: html_document
+---
+
+### Set Up
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(here)
+library(tidyverse)
+library(kableExtra)
+library(lubridate)
+library(janitor)
+```
+
+### Read in the Data
+```{r}
+urchins_data <- read_csv(here("data", "urchins.csv")) %>% 
+  clean_names()
+```
+
+### Wrangle Data
+```{r}
+# Wrangle Data to show date in mdy and to create a year column. Filter for NAPLE site, year 2010, and for purple urchins. 
+naples_reef_2010 <- urchins_data %>% 
+  mutate(date = mdy(date)) %>% 
+  mutate(year = year(date)) %>% 
+  filter(site == "NAPL",
+         year == 2010,
+         common_name == "Purple Urchin")
+```
+
+### Visualize Data
+```{r}
+ggplot(data = naples_reef_2010, aes(x = size)) +
+  geom_histogram(color = "black", fill = "white") +
+  facet_grid(treatment ~.) + 
+  labs(x = "Purple Urchin Size (cm)",
+       y = "Count",
+       title = "Purple Urchin Size Distribution at Naples in 2010",
+       caption = "Figure 1: CAPTION")
+```
+## Insert QQ Plot Here
+TAKEAWAYS: 
+
+### Summary Table
+```{r}
+urchins_summary <- naples_reef_2010 %>% 
+  group_by(treatment) %>% 
+  summarize(mean = mean(size),
+            median = median(size),
+            sd = sd(size),
+            sample_size = n()) %>% 
+  kable(caption = "Table 1: Summary Statistics of Purple Urchin Sizes",
+        col.names = c("Treatment",
+                      "Mean (cm)",
+                      "Median(cm)",
+                      "Standard Deviation",
+                      "Sample Size"),
+        digits = 1) %>% 
+  kable_minimal()
+
+urchins_summary
+```
+
