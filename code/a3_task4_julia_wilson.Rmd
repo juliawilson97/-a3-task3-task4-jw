@@ -84,9 +84,7 @@ urchins_summary <- naples_reef_2010 %>%
             median = median(size, na.rm = TRUE),
             sd = sd(size, na.rm = TRUE),
             sample_size = n()) %>% 
-  kable(caption = "Table 1: Summary Statistics of Purple Urchin Body Diameter. This
-        table compares urchin body diameters (cm) by treatement group at Naples in
-        2010",
+  kable(caption = "Table 1: Summary Statistics of Purple Urchin Body Diameter (cm)",
         col.names = c("Treatment",
                       "Mean (cm)",
                       "Median (cm)",
@@ -101,4 +99,8 @@ urchins_summary <- naples_reef_2010 %>%
 
 urchins_summary
 ```
+
+**Table 1: Summary Statistics of Purple Urchin Body Diameter** This table compares
+urchin body diameters (cm) by treatment group at Naples in 2010. 
+
 ### End Task 4
