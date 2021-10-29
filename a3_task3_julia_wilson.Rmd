@@ -1,13 +1,20 @@
 ---
-title: "a3_task3_julia_wilson.RMD"
+title: "Task 3: Santa Barbara Urchins"
 author: "Julia Wilson"
 date: "10/23/2021"
-output: html_document
+output: 
+  html_document: 
+    toc: yes
+    theme: cerulean
 ---
+### Overview
+In this task we wrangle, analyze, and visualize data about red and purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers. 
 
-### Set Up
+**Data Citation:** Reed, LTER: Reef:Long-term experiment:Kelop removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
 
+### Setup
 ```{r message = FALSE}
+# Attach Packages
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(here)
 library(tidyverse)
@@ -23,54 +30,55 @@ library(kableExtra)
 urchins_data <- read_csv(here("data", "urchins.csv"))
 ```
 
-### Wrangle Data
+### Clean Data using clean_names()
 ```{r}
-# Clean data names with clean_names()
 urchins_clean <- urchins_data %>% 
   clean_names()
 ```
 
-
-### Visualize Data
+### Visualize Data: Compare the distribution sizes between purple and red urchins
 ```{r}
 ggplot(data = urchins_clean, aes(x = size)) +
-  geom_histogram(color = "red", fill = "white", bin = 10) +
-  facet_grid(common_name ~ .) + 
-  labs(x = "Urchin Diameter (cm)", 
-       y = "Count",
-       title = "Purple and Red Urchin Sizes",
-       caption = "Figure 1: Purple and Red Urchin Sizes Compares the distribution of sizes between purple and red urchins.") + 
+  geom_histogram(color = "red", fill = "white", bins = 10) +
+  facet_wrap(~common_name) + 
+  labs(x = "Urchin Body Diameter (cm)", 
+       y = "Count (#)",
+       title = "Purple and Red Urchin Sizes (WILSON)",
+       caption = "Data Source: Reed, LTER: Reef:Long-term experiment:
+       Kelop removal: Urchin size frequency distribution") + 
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
+**Figure 1: Purple and Red Urchin Sizes** Figure 1 compares the distribution of body diameters (cm) between purple and red urchins. Purple urchin body diameters (cm) have a lower tendency, smaller distribution, and spread than Red Urchins. 
 
-### Descriptive Statistics Table
+### Descriptive Statistics Table: Create a finalized summary table that contains mean, median, standard deviation, and sample size for purple and red urchins
 ```{r}
 # Create a finalized summary table using kableEXTRA
 urchins_summary <- urchins_clean %>% 
   group_by(common_name) %>% 
-  summarize(mean = mean(size),
-            median = median(size),
-            sd = sd(size),
+  summarize(mean = mean(size, na.rm = TRUE),
+            median = median(size, na.rm = TRUE),
+            sd = sd(size, na.rm = TRUE),
             sample_size = n()) %>% 
-  kable(caption = "Table 1: Summary Statistics of Urchin Sizes",
+  kable(caption = "Table 1: Urchin Body Diameters (cm) Summary Statistics. This table compares red urchins (n=27,408) and purple urchins (n=31,805) body diameters (cm) by mean, median, standard deviation, and sample size",
         col.names = c("Urchin Name",
                       "Mean (cm)",
-                      "Median(cm)",
-                      "Standard Deviation",
+                      "Median (cm)",
+                      "Standard Deviation (cm)",
                       "Sample Size"),
         digits = 1) %>% 
-  kable_minimal()
+  kable_minimal(html_font = "Georgia", font_size = 12, full_width = FALSE) %>% 
+  kable_material(c("striped", "hover", "condensed"))
 
 urchins_summary
 ```
 
-The purple urchins have a smaller mean (4.5cm), median (4.5cm), and standard deviation (1.2) than the red urchins. As a result, the purple urchins' central tendency and spread are also smaller than the red urchins. The red urchins’ larger central tendency and spread are a result of the following values: mean (6.8cm), median (7.0cm), and standard deviation (1.9). 
-
-
+**Conclusion:** The purple urchins have a mean value of 4.5 (cm), which is 2.3 (cm) less than the red urchin's mean value. This a 40.7% difference between mean values. The purple urchins also have a smaller central tendency and spread; their standard deviation is 1.2(cm), which is 0.7 (cm) less than the red urchin's standard deviation. This is a 45.2% difference between standard deviation. 
 
 ## Section 2
+
+### Wrangle Data: Create a data subset that only includes purple urchins. Change dates to mdy format and change site names to full descriptions 
 ```{r}
 purple_urchins <- urchins_clean %>% 
   filter(common_name == "Purple Urchin") %>% 
@@ -81,10 +89,10 @@ purple_urchins <- urchins_clean %>%
     site == "MOHK" ~ "Mohawk Reef",
     site == "IVEE" ~ "Isla Vista Reef",
     site == "AQUE" ~ "Arroyo Quemado Reef",
-    site == "CARP" ~ "Carpinteria Reef"
-  ))
+    site == "CARP" ~ "Carpinteria Reef"))
 ```
 
+### Descriptive Statistics Table: Store a summary table containing total number of purple urchins observed by site and year
 ```{r}
 purple_urchin_summary <- purple_urchins %>% 
   group_by(site_full, year_new) %>% 
@@ -93,19 +101,27 @@ purple_urchin_summary <- purple_urchins %>%
 purple_urchin_summary
 ```
 
+### Visualize Data: Compare purple urchin counts at each site from 2008 - 2020
 ```{r}
 ggplot(data = purple_urchin_summary, 
-       aes(x = year_new, y = sample_size, fill = site_full)) +
-  geom_bar(stat = "identity", width = 0.5) +
-  facet_wrap(~site_full) + 
+       aes(x = year_new, y = sample_size, color = site_full)) +
+  geom_line(size = 0.5) +
+  scale_x_continuous(breaks = c(2008, 2010, 2012, 2014, 2016, 2018, 2020)) +
   labs(x = "Year",
-       y = "Count of Purple Urchins",
-       title = "Total Purple Urchin Count by Site (2008 -2020)",
+       y = "Count (#)",
+       title = "Total Purple Urchin Count by Site (2008 -2020) (WILSON)",
        fill = "Site",
-       caption = "Figure 1: Total Purple Urchin Count by Site
-       Compares number of purple urchins in varying sites between 2008 - 2010.") +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
-        plot.caption = element_text(hjust = 0))
+       caption = "Data Source: Reed, LTER: Reef:Long-term experiment:
+       Kelop removal: Urchin size frequency distribution",
+       color = "Site") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
-Text:
+**Figure 2: Total Purple Urchin Count by Site** Figure 2 compares the number of purple urchins in five sites between 2008 - 2010. The sites included are; Arroyo Quemado Reef, Carpinteria Reef, Isla Vista Reef, Mohawk Reef, and Naples Reef. All of the sites show an increase in purple urchin count in 2008 followed by an overall decline in purple urchin count from 2009 to 2020. 
+
+**Analysis:** There is a possibility that this graph accurately reflects changes in the purple urchin population. However, you would need to take the sample size into account to determine the accuracy. In general, the larger the sample size, the higher the confidence level. We could apply a t test to determine if there is a significant difference between the sample mean and the population mean. 
+
+The changes in the number of purple urchins observed could be explained by an inaccurate representation of data because of the small sample size and/or recorded inaccurately due to human error. 
+
+
+## End Task 3

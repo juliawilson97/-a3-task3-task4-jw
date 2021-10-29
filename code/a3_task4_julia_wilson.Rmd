@@ -1,13 +1,22 @@
 ---
-title: "a3_task4_julia_wilson.Rmd"
+title: "Task 4: Naples Reef (January 2010) Purple Urchins"
 author: "Julia Wilson"
 date: "10/23/2021"
-output: html_document
+output: 
+  html_document: 
+    theme: cerulean
 ---
+### Overview
+In this task we wrangle and visualize data about purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers. Specifically, we analyze and compare the body diamaters (cm) of purple urchins between two treatment groups at the Naples Reef in 2010. 
+
+**Data Citation:** Reed, LTER: Reef:Long-term experiment:Kelop removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
+
 
 ### Set Up
-```{r setup, include=FALSE}
+```{r message = FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+# Attach Packages
 library(here)
 library(tidyverse)
 library(kableExtra)
@@ -17,14 +26,14 @@ library(janitor)
 
 ### Read in the Data
 ```{r}
-urchins_data <- read_csv(here("data", "urchins.csv")) %>% 
-  clean_names()
+# Read in the data 
+urchins_data <- read_csv(here("data", "urchins.csv"))
 ```
 
-### Wrangle Data
+### Wrangle Data: Create a subset of data that reports purple urchins at Naples Reef in 2010 
 ```{r}
-# Wrangle Data to show date in mdy and to create a year column. Filter for NAPLE site, year 2010, and for purple urchins. 
 naples_reef_2010 <- urchins_data %>% 
+  clean_names() %>% 
   mutate(date = mdy(date)) %>% 
   mutate(year = year(date)) %>% 
   filter(site == "NAPL",
@@ -32,36 +41,64 @@ naples_reef_2010 <- urchins_data %>%
          common_name == "Purple Urchin")
 ```
 
-### Visualize Data
+### Exploratory Data: Compare distribution of purple urchin body diameters (cm) between two treatment groups at Naples in 2010 {.tabset .tabset-fade}
+
+#### Histogram 
 ```{r}
 ggplot(data = naples_reef_2010, aes(x = size)) +
-  geom_histogram(color = "black", fill = "white") +
-  facet_grid(treatment ~.) + 
-  labs(x = "Purple Urchin Size (cm)",
-       y = "Count",
-       title = "Purple Urchin Size Distribution at Naples in 2010",
-       caption = "Figure 1: CAPTION")
+  geom_histogram(color = "red", fill = "white", binwidth = 0.7) +
+  facet_wrap(~treatment) + 
+  labs(x = "Body Diameter (cm)",
+       y = "Count (#)",
+       title = "Purple Urchin Size Distribution at Naples in 2010 (WILSON)",
+       caption = "Data Source: Reed, LTER: Reef:Long-term experiment:Kelop removal:
+       Urchin size frequency distribution ver 20. Environmental Data Initiative") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+  theme_bw()
 ```
-## Insert QQ Plot Here
-TAKEAWAYS: 
 
-### Summary Table
+#### QQ Plot
+```{r}
+ggplot(data = naples_reef_2010, aes(sample = size)) +
+  geom_qq(aes(color = treatment), shape = 4, size = 3) +
+  geom_qq_line() +
+  facet_wrap(~ treatment) +
+  labs(x = "Theoretical", 
+       y = "Sample Quantities",
+       caption = "Data Source: Reed, LTER: Reef:Long-term experiment:Kelop removal: 
+       Urchin size frequency distribution ver 20. Environmental Data Initiative")
+```
+
+###
+
+**Analysis:** Both the ggplot and the qqplot illustrate a similar distribution 
+between the annual and control treatment groups. One slight difference is that the
+annual treatment group has a lower central tendency at about 3 (cm), while the
+control treatment group has a higher central tendency around 4 (cm).  
+
+### Summary Table: Create a finalyzed summary table that contains mean, median, standard deviation, and sample size by treatment group
 ```{r}
 urchins_summary <- naples_reef_2010 %>% 
   group_by(treatment) %>% 
-  summarize(mean = mean(size),
-            median = median(size),
-            sd = sd(size),
+  summarize(mean = mean(size, na.rm = TRUE),
+            median = median(size, na.rm = TRUE),
+            sd = sd(size, na.rm = TRUE),
             sample_size = n()) %>% 
-  kable(caption = "Table 1: Summary Statistics of Purple Urchin Sizes",
+  kable(caption = "Table 1: Summary Statistics of Purple Urchin Body Diameter. This
+        table compares urchin body diameters (cm) by treatement group at Naples in
+        2010",
         col.names = c("Treatment",
                       "Mean (cm)",
-                      "Median(cm)",
-                      "Standard Deviation",
+                      "Median (cm)",
+                      "Standard Deviation (cm)",
                       "Sample Size"),
         digits = 1) %>% 
-  kable_minimal()
+  kable_minimal(full_width = FALSE,
+                position = "left",
+                html_font = "Georgia",
+                font_size = 12) %>% 
+  kable_material(c("striped", "hover", "condensed"))
 
 urchins_summary
 ```
-
+### End Task 4
