@@ -14,8 +14,9 @@ In this task we wrangle, analyze, and visualize data about red and purple sea ur
 
 ### Setup
 ```{r message = FALSE}
-# Attach Packages
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+# Attach Packages
 library(here)
 library(tidyverse)
 library(janitor)
@@ -50,7 +51,7 @@ ggplot(data = urchins_clean, aes(x = size)) +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
-**Figure 1: Purple and Red Urchin Sizes** Figure 1 compares the distribution of body diameters (cm) between purple and red urchins. Purple urchin body diameters (cm) have a lower tendency, smaller distribution, and spread than Red Urchins. 
+**Figure 1: Purple and Red Urchin Sizes** Compares the distribution of body diameters (cm) between purple and red urchins. Purple urchin body diameters (cm) have a lower tendency, smaller distribution, and spread than Red Urchins. 
 
 ### Descriptive Statistics Table: Create a finalized summary table that contains mean, median, standard deviation, and sample size for purple and red urchins
 ```{r}
@@ -61,7 +62,7 @@ urchins_summary <- urchins_clean %>%
             median = median(size, na.rm = TRUE),
             sd = sd(size, na.rm = TRUE),
             sample_size = n()) %>% 
-  kable(caption = "Table 1: Urchin Body Diameters (cm) Summary Statistics. This table compares red urchins (n=27,408) and purple urchins (n=31,805) body diameters (cm) by mean, median, standard deviation, and sample size",
+  kable(caption = "Table 1: Urchin Body Diameters (cm) Summary Statistics",
         col.names = c("Urchin Name",
                       "Mean (cm)",
                       "Median (cm)",
@@ -74,7 +75,9 @@ urchins_summary <- urchins_clean %>%
 urchins_summary
 ```
 
-**Conclusion:** The purple urchins have a mean value of 4.5 (cm), which is 2.3 (cm) less than the red urchin's mean value. This a 40.7% difference between mean values. The purple urchins also have a smaller central tendency and spread; their standard deviation is 1.2(cm), which is 0.7 (cm) less than the red urchin's standard deviation. This is a 45.2% difference between standard deviation. 
+**Table 1: Urchin Body Diameters (cm) Summary Statistics** This table compares red urchins (n=27,408) and purple urchins (n=31,805) body diameters (cm) by mean, median, standard deviation, and sample size.
+
+**Conclusion:** The purple urchins have a mean value of 4.5 (cm), which is 2.3 (cm) less than the red urchin's mean value. This a 40.7% difference between mean values. The purple urchins also have a smaller central tendency and spread; their standard deviation is 1.2 (cm), which is 0.7 (cm) less than the red urchin's standard deviation. This is a 45.2% difference between standard deviation. 
 
 ## Section 2
 
@@ -117,7 +120,7 @@ ggplot(data = purple_urchin_summary,
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
-**Figure 2: Total Purple Urchin Count by Site** Figure 2 compares the number of purple urchins in five sites between 2008 - 2010. The sites included are; Arroyo Quemado Reef, Carpinteria Reef, Isla Vista Reef, Mohawk Reef, and Naples Reef. All of the sites show an increase in purple urchin count in 2008 followed by an overall decline in purple urchin count from 2009 to 2020. 
+**Figure 2: Total Purple Urchin Count by Site** Compares the number of purple urchins in five sites between 2008 - 2010. The sites included are; Arroyo Quemado Reef, Carpinteria Reef, Isla Vista Reef, Mohawk Reef, and Naples Reef. All of the sites show an increase in purple urchin count in 2008 followed by an overall decline in purple urchin count from 2009 to 2020. 
 
 **Analysis:** There is a possibility that this graph accurately reflects changes in the purple urchin population. However, you would need to take the sample size into account to determine the accuracy. In general, the larger the sample size, the higher the confidence level. We could apply a t test to determine if there is a significant difference between the sample mean and the population mean. 
 
